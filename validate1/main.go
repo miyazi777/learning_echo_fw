@@ -27,7 +27,7 @@ func main() {
 	e := echo.New()
 	e.Validator = &CustomValidator{validator: validator.New()}
 	e.POST("/", test)
-	e.Logger.Fatal(e.Start(":1113"))
+	e.Logger.Fatal(e.Start(":1111"))
 }
 
 func test(c echo.Context) error {
