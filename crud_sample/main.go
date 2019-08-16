@@ -9,15 +9,25 @@ import (
 
 func main() {
 	e := echo.New()
+	Routing(e)
+	e.Logger.Fatal(e.Start(":1111"))
+}
+
+func Routing(e *echo.Echo) {
 	e.GET("/items", getItems)
+	e.GET("/item/:id", getItem)
 	e.POST("/item", createItem)
 	e.PUT("/item/:id", updateItem)
 	e.DELETE("/item/:id", deleteItem)
-	e.Logger.Fatal(e.Start(":1111"))
 }
 
 func getItems(c echo.Context) error {
 	fmt.Println("items")
+	return c.String(http.StatusOK, "items")
+}
+
+func getItem(c echo.Context) error {
+	fmt.Println("get item")
 	return c.String(http.StatusOK, "items")
 }
 
