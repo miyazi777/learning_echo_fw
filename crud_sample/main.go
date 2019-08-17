@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crud_sample/db"
 	"fmt"
 	"net/http"
 
@@ -8,9 +9,11 @@ import (
 )
 
 func main() {
+	db.InitDb()
+
 	e := echo.New()
 	Routing(e)
-	e.Logger.Fatal(e.Start(":1111"))
+	e.Logger.Fatal(e.Start(":2222"))
 }
 
 func Routing(e *echo.Echo) {
@@ -22,7 +25,11 @@ func Routing(e *echo.Echo) {
 }
 
 func getItems(c echo.Context) error {
-	fmt.Println("items")
+	repo := db.ItemRepositoryImpl{}
+	items := repo.GetList()
+	for _, item := range *items {
+		fmt.Println(item)
+	}
 	return c.String(http.StatusOK, "items")
 }
 
