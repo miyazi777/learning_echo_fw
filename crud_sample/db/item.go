@@ -10,6 +10,7 @@ type Item struct {
 type ItemRepository interface {
 	GetList() *[]Item
 	FindById(id string) *Item
+	Insert(item *Item) error
 }
 
 type ItemRepositoryImpl struct{}
@@ -35,4 +36,12 @@ func (i *ItemRepositoryImpl) FindById(id string) *Item {
 		return nil
 	}
 	return &item
+}
+
+func (t *ItemRepositoryImpl) Insert(item *Item) error {
+	db := getDbConnection()
+	defer db.Close()
+
+	db.Create(item)
+	return nil
 }

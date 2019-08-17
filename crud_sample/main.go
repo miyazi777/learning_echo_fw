@@ -43,8 +43,15 @@ func getItem(c echo.Context) error {
 }
 
 func createItem(c echo.Context) error {
-	fmt.Println("create item")
-	return c.String(http.StatusOK, "item")
+	item := new(db.Item)
+	if err := c.Bind(item); err != nil {
+		return nil
+	}
+
+	repo := db.ItemRepositoryImpl{}
+	repo.Insert(item)
+
+	return c.JSON(http.StatusOK, item)
 }
 
 func updateItem(c echo.Context) error {
