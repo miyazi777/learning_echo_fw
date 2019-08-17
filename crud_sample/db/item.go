@@ -12,6 +12,7 @@ type ItemRepository interface {
 	FindById(id string) *Item
 	Insert(item *Item) error
 	Update(item *Item)
+	Delete(id string)
 }
 
 type ItemRepositoryImpl struct{}
@@ -52,4 +53,11 @@ func (t *ItemRepositoryImpl) Update(item *Item) {
 	defer db.Close()
 
 	db.Save(&item)
+}
+
+func (t *ItemRepositoryImpl) Delete(id string) {
+	db := getDbConnection()
+	defer db.Close()
+
+	db.Delete(Item{}, "id = ?", id)
 }

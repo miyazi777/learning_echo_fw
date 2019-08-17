@@ -81,6 +81,10 @@ func updateItem(c echo.Context) error {
 }
 
 func deleteItem(c echo.Context) error {
-	fmt.Println("delete item")
-	return c.String(http.StatusOK, "item")
+	id := c.Param("id")
+
+	repo := db.ItemRepositoryImpl{}
+	repo.Delete(id)
+
+	return c.JSON(http.StatusOK, id)
 }
