@@ -8,6 +8,10 @@ import (
 	"github.com/labstack/echo"
 )
 
+type ItemForm struct {
+	Name string `json:"name" form:"name"`
+}
+
 func main() {
 	db.InitDb()
 
@@ -43,20 +47,37 @@ func getItem(c echo.Context) error {
 }
 
 func createItem(c echo.Context) error {
-	item := new(db.Item)
-	if err := c.Bind(item); err != nil {
+	itemForm := new(ItemForm)
+	if err := c.Bind(itemForm); err != nil {
 		return nil
 	}
 
+	item := db.Item{}
+	item.Name = itemForm.Name
+
 	repo := db.ItemRepositoryImpl{}
-	repo.Insert(item)
+	repo.Insert(&item)
 
 	return c.JSON(http.StatusOK, item)
 }
 
 func updateItem(c echo.Context) error {
-	fmt.Println("update item")
-	return c.String(http.StatusOK, "item")
+	repo := db.ItemRepositoryImpl{}
+
+	id := c.Param("id")
+	item := repo.FindById(id)
+	if item == nil {
+		return nil
+	}
+
+	newItem := new(db.Item)
+	if err := c.Bind(newItem); err != nil {
+		return nil
+	}
+
+	item.Name = newItem.Name
+	repo.Update(item)
+	return c.JSON(http.StatusOK, item)
 }
 
 func deleteItem(c echo.Context) error {

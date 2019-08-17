@@ -11,6 +11,7 @@ type ItemRepository interface {
 	GetList() *[]Item
 	FindById(id string) *Item
 	Insert(item *Item) error
+	Update(item *Item)
 }
 
 type ItemRepositoryImpl struct{}
@@ -44,4 +45,11 @@ func (t *ItemRepositoryImpl) Insert(item *Item) error {
 
 	db.Create(item)
 	return nil
+}
+
+func (t *ItemRepositoryImpl) Update(item *Item) {
+	db := getDbConnection()
+	defer db.Close()
+
+	db.Save(&item)
 }
