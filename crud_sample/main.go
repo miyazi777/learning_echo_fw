@@ -26,16 +26,20 @@ func Routing(e *echo.Echo) {
 
 func getItems(c echo.Context) error {
 	repo := db.ItemRepositoryImpl{}
+
 	items := repo.GetList()
 	for _, item := range *items {
 		fmt.Println(item)
 	}
-	return c.String(http.StatusOK, "items")
+	return c.JSON(http.StatusOK, items)
 }
 
 func getItem(c echo.Context) error {
-	fmt.Println("get item")
-	return c.String(http.StatusOK, "items")
+	repo := db.ItemRepositoryImpl{}
+
+	id := c.Param("id")
+	item := repo.FindById(id)
+	return c.JSON(http.StatusOK, item)
 }
 
 func createItem(c echo.Context) error {
