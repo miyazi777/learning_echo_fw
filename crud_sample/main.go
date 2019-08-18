@@ -2,20 +2,33 @@ package main
 
 import (
 	"crud_sample/db"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type ItemForm struct {
-	Name string `json:"name" form:"name"`
+	Name string `json:"name" form:"name" validate:"required"`
+}
+
+type Error struct {
+	Error string
+}
+
+type CustomValidator struct {
+	validator *validator.Validate
+}
+
+func (cv *CustomValidator) Validate(i interface{}) error {
+	return cv.validator.Struct(i)
 }
 
 func main() {
 	db.InitDb()
 
 	e := echo.New()
+	e.Validator = &CustomValidator{validator: validator.New()}
 	Routing(e)
 	e.Logger.Fatal(e.Start(":2222"))
 }
@@ -32,9 +45,6 @@ func getItems(c echo.Context) error {
 	repo := db.ItemRepositoryImpl{}
 
 	items := repo.GetList()
-	for _, item := range *items {
-		fmt.Println(item)
-	}
 	return c.JSON(http.StatusOK, items)
 }
 
@@ -50,6 +60,9 @@ func createItem(c echo.Context) error {
 	itemForm := new(ItemForm)
 	if err := c.Bind(itemForm); err != nil {
 		return nil
+	}
+	if err := c.Validate(itemForm); err != nil {
+		return c.JSON(http.StatusBadRequest, &Error{Error: err.Error()})
 	}
 
 	item := db.Item{}
